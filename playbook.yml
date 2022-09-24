@@ -26,11 +26,12 @@
  - name: Setup Machine Rancher
    hosts: rancher
    become: true
-   gather_facts: no
    tasks: 
+    
     - name: Install Docker
       apt:
         name: docker.io
         state: present
+    
     - name: Install Rancher
-      shell: docker run -d --name rancher --restart=unless-stopped -v /otp/rancher:/var/lib/rancher -p 80:80 -p 433:443 rancher/rancher:v2.7-head
+      shell: docker run -d --name rancher --restart=unless-stopped -v /opt/rancher:/var/lib/rancher -p 80:80 -p 443:443 rancher/rancher:v2.4.3
