@@ -1,0 +1,34 @@
+- name: Instalação do AWS CLI e CDK
+  hosts: mitinik_instance
+  become: yes
+  vars:
+    aws_access_key: 
+    aws_secret_key: 
+    aws_region: 
+    aws_profile: 
+
+  tasks:
+    - name: Install Npm
+      shell: apt install npm -y
+    
+    - name: Atualizar lista de pacotes
+      package:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - python3-pip
+        - npm
+
+    - name: Instalar AWS CLI
+      pip:
+        name: awscli
+        executable: pip3
+
+    - name: Install AWS CDK
+      shell: sudo npm install -g typescript && sudo npm install -g aws-cdk-lib
+  
+    - name: Adicionar informações de credenciais ao arquivo AWS CLI
+      lineinfile:
+        dest: "~/.aws/credentials"
+        line: "{{ aws_profile }}:\n    aws_access_key_id={{ aws_access_key }}\n    aws_secret_access_key={{ aws_secret_key }}\n    region={{ aws_region }}"
+        state: present

@@ -1,0 +1,41 @@
+- name: Clone do repositório e aplicação do AWS CDK
+  hosts: mitinik
+  become: yes
+  vars:
+    account: 
+    region: 
+    dir: 
+    app: 
+    url_repository: 
+    aws_access_key_id:    
+    aws_secret_access_key: 
+
+  tasks:
+    - name: Criar repositório
+      command: mkdir {{ dir }}
+
+    - name: Clonar repositório do Git
+      git:
+        repo: "{{ url_repository }}"
+        dest: "{{ dir }}"
+        version: main
+    
+    - name: Configurar Ambiente de execução 
+      shell:
+        cd "{{ dir }}"/"{{ app }}"/bin &&
+        sed -i  s/ACCOUNT/"{{ account }}"/g ecommerce-serveless.ts &&
+        sed -i  s/REGION/"{{ region }}"/g ecommerce-serveless.ts &&
+        sed -i  s/ACCOUNT/"{{ account }}"/g ecommerce-serveless.ts
+    
+
+    - name: Fazer Destroy do AWS CDK
+      shell: cd "{{ dir }}"/"{{ app }}" && npm install && cdk destroy --all --force
+      args:
+        executable: /bin/bash
+      environment:
+        AWS_ACCESS_KEY_ID:      "{{ aws_access_key_id }}"
+        AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
+        AWS_REGION: "us-east-1"
+    
+    - name: Deletar repositório
+      command: rm -rf {{ dir }}

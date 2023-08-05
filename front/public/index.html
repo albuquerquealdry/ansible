@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Goju Start Stop Infra</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Goju Start Stop Infra</h1>
+    <div class="button-container">
+      <button onclick="executarComando('start')">Iniciar Infraestrutura</button>
+      <button onclick="executarComando('stop')">Parar Infraestrutura</button>
+    </div>
+
+    <div class="logs-container">
+      <pre id="logs"></pre>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const logsElement = document.getElementById('logs');
+
+    function executarComando(acao) {
+      logsElement.textContent = '';
+      socket.emit('executar-comando', acao);
+    }
+
+    socket.on('log', log => {
+      logsElement.textContent += log;
+      logsElement.scrollTop = logsElement.scrollHeight;
+    });
+  </script>
+</body>
+</html>
